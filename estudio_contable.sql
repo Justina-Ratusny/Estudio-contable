@@ -1,6 +1,6 @@
 
 -- ================================
--- ENTREGA 2 - PROYECTO SQL CONTABLE
+-- ENTREGA 3 - PROYECTO SQL CONTABLE
 -- ================================
 
 -- CREACIÓN DE TABLAS BASE
@@ -156,3 +156,80 @@ BEGIN
     END IF;
 END $$
 DELIMITER ;
+
+-- ================================
+-- CREACIÓN DE NUEVAS TABLAS
+-- ================================
+
+-- TABLA Honorarios
+CREATE TABLE honorarios (
+    id_honorario INT AUTO_INCREMENT PRIMARY KEY,
+    id_cliente INT,
+    periodo VARCHAR(45) NOT NULL,
+    monto DECIMAL(10,2) NOT NULL,
+    estado VARCHAR(45) NOT NULL,
+    pago DATE,
+    FOREIGN KEY (id_cliente) REFERENCES cliente(id_cliente)
+);
+
+-- TABLA Proveedores
+CREATE TABLE proveedores (
+    id_proveedor INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    cuit VARCHAR(20),
+    servicio_ofrecido VARCHAR(100),
+    mail VARCHAR(100),
+    telefono VARCHAR(20)
+);
+
+-- TABLA Gastos_Estudio
+CREATE TABLE gastos_estudio (
+    id_gasto INT AUTO_INCREMENT PRIMARY KEY,
+    tipo_gasto VARCHAR(50),
+    descripcion VARCHAR(200),
+    monto DECIMAL(10,2),
+    fecha DATE,
+    medio_pago VARCHAR(50),
+    id_proveedor INT,
+    FOREIGN KEY (id_proveedor) REFERENCES proveedores(id_proveedor)
+);
+
+-- TABLA Vencimientos_Adicionales
+CREATE TABLE vencimientos_adicionales (
+    id_vencimiento INT AUTO_INCREMENT PRIMARY KEY,
+    id_cliente INT,
+    descripcion VARCHAR(200),
+    fecha_vencimiento DATE,
+    estado VARCHAR(50),
+    FOREIGN KEY (id_cliente) REFERENCES cliente(id_cliente)
+);
+
+-- ================================
+-- INSERCIÓN DE DATOS DE PRUEBA
+-- ================================
+
+-- Proveedores
+INSERT INTO proveedores (nombre, cuit, servicio_ofrecido, mail, telefono) VALUES
+('Edesur', '30-11223344-9', 'Electricidad', 'contacto@edesur.com', '1140001111'),
+('Fibertel', '30-55667788-1', 'Internet', 'soporte@fibertel.com', '1140002222'),
+('Librería San Martín', '20-99887766-3', 'Papelería', 'ventas@libreriasm.com', '1140003333');
+
+-- Honorarios
+INSERT INTO honorarios (id_cliente, periodo, monto, estado, pago) VALUES
+(1, '2025-01', 150000.00, 'Pendiente', NULL),
+(2, '2025-01', 200000.00, 'Pagado', '2025-02-10'),
+(1, '2025-02', 150000.00, 'Pagado', '2025-03-05');
+
+-- Gastos del Estudio (incluye alquiler)
+INSERT INTO gastos_estudio (tipo_gasto, descripcion, monto, fecha, medio_pago, id_proveedor) VALUES
+('Luz', 'Factura enero 2025', 25000.00, '2025-02-05', 'Débito automático', 1),
+('Internet', 'Plan fibra 300mb', 18000.00, '2025-02-07', 'Transferencia', 2),
+('Papelería', 'Resmas de hojas y biromes', 8000.00, '2025-02-10', 'Efectivo', 3),
+('Alquiler', 'Alquiler oficina febrero 2025', 120000.00, '2025-02-01', 'Transferencia', NULL);
+
+-- Vencimientos adicionales
+INSERT INTO vencimientos_adicionales (id_cliente, descripcion, fecha_vencimiento, estado) VALUES
+(1, 'Renovación contrato de alquiler', '2025-06-30', 'Pendiente'),
+(2, 'Presentación balances societarios', '2025-04-15', 'Pendiente'),
+(1, 'Pago seguro ART', '2025-03-10', 'Cumplido');
+
